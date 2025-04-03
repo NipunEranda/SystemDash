@@ -40,7 +40,7 @@ jobs:
       #   continue-on-error: true
 
       - name: Install cross-compilation tools
-        if: contains(matrix.target, 'linux')
+        if: contains(matrix.os, 'ubuntu-latest')
         run: sudo apt update && sudo apt install -y build-essential gcc
 
       - name: Clean cargo build cache
