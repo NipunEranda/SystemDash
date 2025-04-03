@@ -16,14 +16,14 @@ jobs:
             target: x86_64-unknown-linux-gnu
             artifact_name: app-linux
             binary_name: app
-          - os: macos-latest
-            target: x86_64-apple-darwin
-            artifact_name: app-macos
-            binary_name: app
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
-            artifact_name: app-windows
-            binary_name: app.exe
+          # - os: macos-latest
+          #   target: x86_64-apple-darwin
+          #   artifact_name: app-macos
+          #   binary_name: app
+          # - os: windows-latest
+          #   target: x86_64-pc-windows-msvc
+          #   artifact_name: app-windows
+          #   binary_name: app.exe
 
     runs-on: ${{ matrix.os }}
 
