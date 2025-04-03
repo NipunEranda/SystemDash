@@ -3,7 +3,7 @@ name: SystemDash Release
 on:
   push:
     tags:
-      - "*"  # Runs only when pushing a version tag (e.g., v1.0.0)
+      - "v*"  # Runs only when pushing a version tag (e.g., v1.0.0)
 
 jobs:
   build:
