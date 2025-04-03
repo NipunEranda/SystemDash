@@ -1,5 +1,5 @@
-use std::net::{TcpListener, TcpStream};
 use std::io::Write;
+use std::net::{TcpListener, TcpStream};
 use std::thread;
 use std::time::Duration;
 
@@ -9,7 +9,10 @@ mod routes;
 
 fn handle_client(mut stream: TcpStream) {
     loop {
-        let data = format!("{}\n", serde_json::to_string(&routes::info::load()).unwrap());
+        let data = format!(
+            "{}\n",
+            serde_json::to_string(&routes::info::load()).unwrap()
+        );
         if stream.write_all(data.as_bytes()).is_err() {
             println!("Client disconnected");
             break;
@@ -36,12 +39,15 @@ async fn start_tcp_server() {
 
 #[tokio::main]
 async fn main() {
-    let system_info = warp::path("info").and(warp::get()).map(|| {
-        warp::reply::with_status(
-            warp::reply::json(&routes::info::load()),
-            warp::http::StatusCode::OK,
-        )
-    });
+    let system_info = warp::path("api")
+        .and(warp::path("info"))
+        .and(warp::get())
+        .map(|| {
+            warp::reply::with_status(
+                warp::reply::json(&routes::info::load()),
+                warp::http::StatusCode::OK,
+            )
+        });
 
     let routes = system_info;
 
