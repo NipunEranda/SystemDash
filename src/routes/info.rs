@@ -1,13 +1,8 @@
-use sysinfo::{Disks, System};
+use sysinfo::{Components, Disks, System};
 
 use crate::models::{
-    cpu::Cpu,
-    disk::Disk,
-    disk_usage::DiskUsage,
-    memory::Memory,
-    primary::Primary,
-    process::Process,
-    sys_info::SysInfo,
+    cpu::Cpu, disk::Disk, disk_usage::DiskUsage, memory::Memory, primary::Primary,
+    process::Process, sys_info::SysInfo,
 };
 
 pub fn load() -> SysInfo {
@@ -27,7 +22,9 @@ pub fn load() -> SysInfo {
         System::kernel_version().unwrap(),
         System::os_version().unwrap(),
         System::host_name().unwrap(),
-        sys.processes().len()
+        sys.processes().len(),
+        sys.global_cpu_usage(),
+        sys.cpus().len()
     );
     let mut processes: Vec<Process> = vec![];
     let mut disks: Vec<Disk> = vec![];
@@ -70,6 +67,12 @@ pub fn load() -> SysInfo {
         ));
     }
 
+    let components = Components::new_with_refreshed_list();
+    println!("=> components:");
+    for component in &components {
+        println!("{component:?}");
+    }
+
     // serde_json::to_string(&memory).unwrap()
-    SysInfo::new(memory, primary, sys.cpus().len(), processes, disks, cpus)
+    SysInfo::new(memory, primary, processes, disks, cpus)
 }
