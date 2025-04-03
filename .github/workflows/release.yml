@@ -2,8 +2,8 @@ name: SystemDash Release
 
 on:
   push:
-    tags:
-      - "v*"  # Runs only when pushing a version tag (e.g., v1.0.0)
+    branches:
+      - main
 
 jobs:
   build:
@@ -33,21 +33,21 @@ jobs:
           targets: ${{ matrix.target }}
 
       - name: Install Rust target
-        run: rustup target add x86_64-unknown-linux-gnu
+        run: rustup target add ${{ matrix.target }}
 
       # - name: Cache Cargo dependencies
       #   uses: Swatinem/rust-cache@v2
       #   continue-on-error: true
 
-      - name: Install system dependencies (Linux)
-        if: runner.os == 'Linux'
+      - name: Install cross-compilation tools
+        if: contains(matrix.target, 'linux')
         run: sudo apt update && sudo apt install -y build-essential gcc
 
       - name: Clean cargo build cache
         run: cargo clean
 
       - name: Build project
-        run: cargo build --release --target ${{ matrix.target }}
+        run: cargo build --release --target ${{ matrix.target }} --verbose
 
       - name: Prepare artifact
         run: |
@@ -61,23 +61,23 @@ jobs:
           name: ${{ matrix.artifact_name }}
           path: release/${{ matrix.binary_name }}
 
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
+  # release:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: write
 
-    steps:
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts
+  #   steps:
+  #     - name: Download all artifacts
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         path: artifacts
 
-      - name: List artifacts
-        run: ls -R artifacts
+  #     - name: List artifacts
+  #       run: ls -R artifacts
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: artifacts/**/* 
-          token: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: Create GitHub Release
+  #       uses: softprops/action-gh-release@v2
+  #       with:
+  #         files: artifacts/**/* 
+  #         token: ${{ secrets.GITHUB_TOKEN }}
