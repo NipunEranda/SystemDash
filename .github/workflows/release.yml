@@ -35,6 +35,9 @@ jobs:
       - name: Install Rust target
         run: rustup target add ${{ matrix.target }}
 
+      - name: Install Windows target for Rust
+        run: rustup target add x86_64-pc-windows-msvc
+
       # - name: Cache Cargo dependencies
       #   uses: Swatinem/rust-cache@v2
       #   continue-on-error: true
@@ -64,23 +67,23 @@ jobs:
           name: ${{ matrix.artifact_name }}
           path: release/${{ matrix.binary_name }}
 
-  # release:
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   permissions:
-  #     contents: write
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
-  #   steps:
-  #     - name: Download all artifacts
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         path: artifacts
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
 
-  #     - name: List artifacts
-  #       run: ls -R artifacts
+      - name: List artifacts
+        run: ls -R artifacts
 
-  #     - name: Create GitHub Release
-  #       uses: softprops/action-gh-release@v2
-  #       with:
-  #         files: artifacts/**/* 
-  #         token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/**/* 
+          token: ${{ secrets.GITHUB_TOKEN }}
