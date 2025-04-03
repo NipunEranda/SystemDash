@@ -7,21 +7,7 @@ on:
 
 jobs:
   build:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-        target: [x86_64-unknown-linux-gnu, x86_64-pc-windows-msvc]
-        include:
-          - os: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
-            artifact_name: app-linux
-            binary_name: SystemDash
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
-            artifact_name: app-windows
-            binary_name: SystemDash.exe
-
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
@@ -30,42 +16,34 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.target }}
+          targets: x86_64-unknown-linux-gnu
 
       - name: Install Rust target
-        run: rustup target add ${{ matrix.target }}
-
-      - name: Install Windows target for Rust
-        run: rustup target add x86_64-pc-windows-msvc
-
-      # - name: Cache Cargo dependencies
-      #   uses: Swatinem/rust-cache@v2
-      #   continue-on-error: true
+        run: rustup target add x86_64-unknown-linux-gnu
 
       - name: Install cross-compilation tools
-        if: contains(matrix.os, 'ubuntu-latest')
         run: sudo apt update && sudo apt install -y build-essential gcc
 
       - name: Clean cargo build cache
         run: cargo clean
 
       - name: Build project
-        run: cargo build --release --target ${{ matrix.target }} --verbose
+        run: cargo build --release --target x86_64-unknown-linux-gnu --verbose
 
       - name: Debug target output
-        run: ls -R target/${{ matrix.target }}/release
+        run: ls -R target/x86_64-unknown-linux-gnu/release
 
       - name: Prepare artifact
         run: |
           mkdir -p release
-          cp target/${{ matrix.target }}/release/${{ matrix.binary_name }} release/
+          cp target/x86_64-unknown-linux-gnu/release/SystemDash release/
         shell: bash
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.artifact_name }}
-          path: release/${{ matrix.binary_name }}
+          name: SystemDash
+          path: release/SystemDash
 
   release:
     needs: build
