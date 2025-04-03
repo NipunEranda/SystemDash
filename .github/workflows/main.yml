@@ -3,7 +3,7 @@ name: SystemDash Release
 on:
   push:
     tags:
-      - "v*"  # Runs only when pushing a version tag (e.g., v1.0.0)
+      - "v*"  # Trigger workflow on version tags (e.g., v1.0.0)
 
 jobs:
   build-linux:
@@ -30,21 +30,17 @@ jobs:
       - name: Build project
         run: cargo build --release --target x86_64-unknown-linux-gnu --verbose
 
-      - name: Debug target output
-        run: ls -R target/x86_64-unknown-linux-gnu/release
-
       - name: Prepare artifact
         run: |
           mkdir -p release
-          cp target/x86_64-unknown-linux-gnu/release/SystemDash release/
+          cp target/x86_64-unknown-linux-gnu/release/SystemDash release/systemdash-linux
         shell: bash
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: systemdash-linux
-          path: release/SystemDash
-
+          path: release/systemdash-linux
 
   build-mac:
     runs-on: macos-latest
@@ -70,24 +66,24 @@ jobs:
       - name: Build project for macOS Apple Silicon (aarch64)
         run: cargo build --release --target aarch64-apple-darwin --verbose
 
-      - name: Debug target output for macOS Intel
-        run: ls -R target/x86_64-apple-darwin/release
-
-      - name: Debug target output for macOS Apple Silicon
-        run: ls -R target/aarch64-apple-darwin/release
-
       - name: Prepare artifacts
         run: |
           mkdir -p release
-          cp target/x86_64-apple-darwin/release/SystemDash release/
-          cp target/aarch64-apple-darwin/release/SystemDash release/
+          cp target/x86_64-apple-darwin/release/SystemDash release/systemdash-mac-x86_64
+          cp target/aarch64-apple-darwin/release/SystemDash release/systemdash-mac-aarch64
         shell: bash
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: systemdash-mac
-          path: release/SystemDash
+            name: systemdash-mac-x86_64
+            path: release/systemdash-mac-x86_64
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+            name: systemdash-mac-aarch64
+            path: release/systemdash-mac-aarch64
 
   release:
     needs: 
