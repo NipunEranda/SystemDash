@@ -1,0 +1,12 @@
+#!/bin/sh
+rm -r dist
+rm -r target
+
+cargo build --release
+
+cd frontend
+npm i && npm run build
+mkdir ../target/release/dist
+mv dist ../target/release/dist/static
+mv ../target/release/SystemDash ../target/release/dist/systemdash
+mv ../target/release/dist ..

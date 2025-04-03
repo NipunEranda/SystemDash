@@ -1,44 +1,43 @@
-use std::io::Write;
-use std::net::{TcpListener, TcpStream};
-use std::thread;
+use futures_util::{SinkExt, StreamExt};
 use std::time::Duration;
-
+use tokio::time::interval;
 use warp::Filter;
+use warp::ws::{Message, WebSocket};
+
 mod models;
 mod routes;
 
-fn handle_client(mut stream: TcpStream) {
+// WebSocket handler
+async fn handle_websocket(ws: WebSocket) {
+    let (mut tx, mut rx) = ws.split();
+
+    // Periodically send system info to the client
+    let mut interval = interval(Duration::from_secs(1));
     loop {
-        let data = format!(
-            "{}\n",
-            serde_json::to_string(&routes::info::load()).unwrap()
-        );
-        if stream.write_all(data.as_bytes()).is_err() {
-            println!("Client disconnected");
-            break;
-        }
-        thread::sleep(Duration::from_secs(5)); // Wait 5 seconds
-    }
-}
-
-async fn start_tcp_server() {
-    let listener = TcpListener::bind("127.0.0.1:9999").expect("Failed to bind to port");
-
-    println!("Server running on 127.0.0.1:9999...");
-
-    for stream in listener.incoming() {
-        match stream {
-            Ok(stream) => {
-                println!("New client connected!");
-                thread::spawn(move || handle_client(stream));
+        tokio::select! {
+            _ = interval.tick() => {
+                let data = serde_json::to_string(&routes::info::load()).unwrap();
+                if tx.send(Message::text(data)).await.is_err() {
+                    println!("WebSocket client disconnected");
+                    break;
+                }
             }
-            Err(e) => eprintln!("Connection failed: {}", e),
+            Some(Ok(msg)) = rx.next() => {
+                println!("Received message from client: {:?}", msg);
+            }
+            else => break,
         }
     }
 }
 
 #[tokio::main]
 async fn main() {
+    // WebSocket route
+    let websocket_route = warp::path("ws")
+        .and(warp::ws())
+        .map(|ws: warp::ws::Ws| ws.on_upgrade(handle_websocket));
+
+    // REST API route
     let system_info = warp::path("api")
         .and(warp::path("info"))
         .and(warp::get())
@@ -49,14 +48,10 @@ async fn main() {
             )
         });
 
-    let routes = system_info;
+    let static_files = warp::fs::dir("./static");
 
-    // Web API
-    let warp_server = warp::serve(routes).run(([0, 0, 0, 0], 8000));
+    let routes = websocket_route.or(system_info).or(static_files);
 
-    // Run TCP and Warp servers concurrently
-    tokio::select! {
-        _ = tokio::spawn(start_tcp_server()) => (),
-        _ = warp_server => (),
-    }
+    // Start the Warp server
+    warp::serve(routes).run(([0, 0, 0, 0], 8000)).await;
 }

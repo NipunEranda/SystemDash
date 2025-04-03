@@ -1,18 +1,33 @@
 <template>
-  <div>Index</div>
+  <div>{{ sys_info }}</div>
 </template>
 
 <script setup>
-import { onMounted, onUnmounted } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
+
+let sys_info = ref({});
+
 onMounted(() => {
-  setInterval(async () => {
+  const socket = new WebSocket("ws://localhost:8000/ws");
+
+  socket.onopen = () => {
+    console.log("WebSocket connection established");
+  };
+
+  socket.onmessage = (event) => {
     try {
-      const response = await fetch("/api/info");
-      const data = await response.text();
-      console.log(JSON.parse(data));
-    } catch (error) {
-      console.error("Error fetching data:", error);
+      sys_info.value = JSON.parse(event.data);
+    } catch (e) {
+      sys_info.value = {};
     }
-  }, 5000); // 5000ms = 5 seconds
+  };
+
+  socket.onclose = () => {
+    console.log("WebSocket connection closed");
+  };
+
+  socket.onerror = (error) => {
+    console.error("WebSocket error:", error);
+  };
 });
 </script>
