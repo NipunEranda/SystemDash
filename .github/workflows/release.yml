@@ -16,14 +16,14 @@ jobs:
             target: x86_64-unknown-linux-gnu
             artifact_name: app-linux
             binary_name: app
-          # - os: macos-latest
-          #   target: x86_64-apple-darwin
-          #   artifact_name: app-macos
-          #   binary_name: app
-          # - os: windows-latest
-          #   target: x86_64-pc-windows-msvc
-          #   artifact_name: app-windows
-          #   binary_name: app.exe
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            artifact_name: app-macos
+            binary_name: app
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            artifact_name: app-windows
+            binary_name: app.exe
 
     runs-on: ${{ matrix.os }}
 
@@ -36,9 +36,23 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
+      - name: Install Rust target
+        run: rustup target add x86_64-unknown-linux-gnu
+
       # - name: Cache Cargo dependencies
       #   uses: Swatinem/rust-cache@v2
       #   continue-on-error: true
+
+      - name: Install system dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt update && sudo apt install -y build-essential gcc
+
+      - name: Install Xcode tools (macOS)
+        if: runner.os == 'macOS'
+        run: xcode-select --install
+
+      - name: Clean cargo build cache
+        run: cargo clean
 
       - name: Build project
         run: cargo build --release --target ${{ matrix.target }}
