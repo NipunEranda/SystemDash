@@ -1,4 +1,4 @@
-name: Linux SystemDash Release
+name: SystemDash Release
 
 on:
   push:
