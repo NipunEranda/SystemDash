@@ -1,7 +1,12 @@
 use sysinfo::{Disks, System};
 
 use crate::models::{
-    disk::Disk, disk_usage::DiskUsage, memory::Memory, primary::Primary, process::Process,
+    cpu::Cpu,
+    disk::Disk,
+    disk_usage::DiskUsage,
+    memory::Memory,
+    primary::Primary,
+    process::Process,
     sys_info::SysInfo,
 };
 
@@ -12,17 +17,21 @@ pub fn load() -> SysInfo {
     let memory = Memory::new(
         sys.total_memory(),
         sys.used_memory(),
+        sys.free_memory(),
         sys.total_swap(),
         sys.used_swap(),
+        sys.free_swap(),
     );
     let primary = Primary::new(
         System::name().unwrap(),
         System::kernel_version().unwrap(),
         System::os_version().unwrap(),
         System::host_name().unwrap(),
+        sys.processes().len()
     );
     let mut processes: Vec<Process> = vec![];
     let mut disks: Vec<Disk> = vec![];
+    let mut cpus: Vec<Cpu> = vec![];
 
     for (pid, process) in sys.processes() {
         let disk_usage = process.disk_usage();
@@ -51,6 +60,16 @@ pub fn load() -> SysInfo {
         ));
     }
 
+    for cpu in sys.cpus() {
+        cpus.push(Cpu::new(
+            cpu.name().to_string(),
+            cpu.cpu_usage(),
+            cpu.frequency(),
+            cpu.vendor_id().to_string(),
+            cpu.brand().to_string(),
+        ));
+    }
+
     // serde_json::to_string(&memory).unwrap()
-    SysInfo::new(memory, primary, sys.cpus().len(), processes, disks)
+    SysInfo::new(memory, primary, sys.cpus().len(), processes, disks, cpus)
 }
