@@ -42,7 +42,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SystemDash
+          name: systemdash-linux
           path: release/SystemDash
 
   release-linux:
@@ -107,7 +107,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: SystemDash
+          name: systemdash-mac
           path: release/SystemDash
 
   release-mac:
