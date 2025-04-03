@@ -90,7 +90,9 @@ jobs:
           path: release/SystemDash
 
   release:
-    needs: build-mac
+    needs: 
+      - build-linux
+      - build-mac
     runs-on: ubuntu-latest
     permissions:
       contents: write
