@@ -2,6 +2,8 @@
     "C_Cpp.errorSquiggles": "disabled",
     "files.associations": {
         "*.js": "javascript",
-        "stat.h": "c"
+        "stat.h": "c",
+        "functions.h": "c",
+        "dirent.h": "c"
     }
 }
