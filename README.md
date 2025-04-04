@@ -1,7 +1,23 @@
 ## Build Commands
 
-Apple Silicon: ```rustup target add aarch64-apple-darwin && cargo build --release --target aarch64-apple-darwin```
+Compile builder
 
-Apple Intel: ```rustup target add x86_64-apple-darwin && cargo build --release --target aarch64-apple-darwin```
+    gcc builder/build.c -o build
 
-Linux: ```rustup target add x86_64-unknown-linux-gnu && cargo build --release --target x86_64-unknown-linux-gnu```
+Then build the application using
+
+    Apple Silicon: 
+        
+        ./builder applesilicon
+
+    Apple Intel:
+        
+        ./builder applex86
+
+    Linux:
+        
+        ./builder linux
+
+Clean previous build
+
+    ./build clean
