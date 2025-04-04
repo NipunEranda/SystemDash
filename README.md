@@ -8,15 +8,15 @@ Then build the application using
 
     Apple Silicon: 
         
-        ./builder applesilicon
+        ./build applesilicon
 
     Apple Intel:
         
-        ./builder applex86
+        ./build applex86
 
     Linux:
         
-        ./builder linux
+        ./build linux
 
 Clean previous build
 
