@@ -1,7 +1,6 @@
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
-
 #include <stdbool.h>
 
 int remove_directory(const char *path);

@@ -13,6 +13,11 @@ const char *rust_build = "target";
 const char *node_modules = "./frontend/node_modules";
 const char *node_build = "./frontend/dist";
 
+const char* apple_silicon = "applesilicon";
+const char* apple_x86 = "applex86";
+const char* linx = "linux";
+const char* windows = "windows";
+
 int remove_directory(const char *path)
 {
     DIR *dir = opendir(path); // Open the directory
@@ -215,6 +220,10 @@ char *get_target(const char *systemType)
     {
         return "x86_64-unknown-linux-gnu";
     }
+    else if (strcmp(systemType, "windows") == 0)
+    {
+        return "x86_64-pc-windows-gnu";
+    }
     else
     {
         return "0";
@@ -241,8 +250,10 @@ void build(const char *systemType)
     char *target = "";
 
 #ifdef _WIN32
-    // Windows-specific code
-    status = system(systemType); // On Windows, `system` should work fine for basic commands
+    char build_command[100];
+    sprintf(build_command, "rustup target add %s && cargo build --release --target %s", get_target(systemType), get_target(systemType));
+    
+    status = system(build_command);
 #else
     if ((strcmp(systemType, "applesilicon") == 0) || (strcmp(systemType, "applex86") == 0) || (strcmp(systemType, "linux") == 0))
     {
