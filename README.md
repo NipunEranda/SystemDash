@@ -1,23 +1,21 @@
 ## Build Commands
 
-Compile builder
+# Compile builder
 
     gcc builder/build.c -o build
 
-Then build the application using
+# Build for Apple Silicon: 
 
-    Apple Silicon: 
-        
-        ./build applesilicon
+    ./build applesilicon
 
-    Apple Intel:
-        
-        ./build applex86
+# Build for Apple Intel:
 
-    Linux:
-        
-        ./build linux
+    ./build applex86
+    
+# Build for Linux:
 
-Clean previous build
+    ./build linux
+
+# Clean previous build
 
     ./build clean
