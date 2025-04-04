@@ -12,7 +12,7 @@ async fn handle_websocket(ws: WebSocket) {
     let (mut tx, mut rx) = ws.split();
 
     // Periodically send system info to the client
-    let mut interval = interval(Duration::from_secs(1));
+    let mut interval = interval(Duration::from_secs(3));
     loop {
         tokio::select! {
             _ = interval.tick() => {
@@ -53,5 +53,6 @@ async fn main() {
     let routes = websocket_route.or(system_info).or(static_files);
 
     // Start the Warp server
+    println!("Starting server on http://localhost:8000");
     warp::serve(routes).run(([0, 0, 0, 0], 8000)).await;
 }
