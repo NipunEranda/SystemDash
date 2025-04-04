@@ -1,1 +1,39 @@
 @import "tailwindcss";
+
+
+.unselectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  
+  @theme {
+  
+    /* Dark */
+    --color-dark-theme-primary: #18181b; /* bg-zinc-900 */
+    --color-dark-theme-primary-secondary: #27272a; /* bg-zinc-800 */
+    --color-dark-theme-primary-border: #3f3f46; /* bg-zinc-600 */
+    --color-dark-theme-primary-placeholder: #9f9fa9; /* bg-zinc-400 */
+    --color-dark-theme-primary-text: #ffffff; /* text-white */
+    --color-dark-theme-primary-text-secondary: #9f9fa9; /* text-zinc-400 */
+    --color-dark-theme-primary-text-icon: #9f9fa9; /* text-zinc-400 */
+  
+    /* Light */
+    --color-light-theme-primary: #f4f4f5; /* bg-zinc-100 */
+    --color-light-theme-primary-secondary: #e4e4e7; /* bg-zinc-200 */
+    --color-light-theme-primary-border: #9f9fa9; /* bg-zinc-400 */
+    --color-light-theme-primary-placeholder: #9f9fa9; /* bg-zinc-400 */
+    --color-light-theme-primary-text: #000000; /* text-black */
+    --color-light-theme-primary-text-secondary: #9f9fa9; /* text-zinc-400 */
+    --color-light-theme-primary-text-icon: #9f9fa9; /* text-zinc-400 */
+  
+    /* Common */
+    --color-theme-danger: #991b1b; /* bg-red-800 */
+    --color-theme-first: #fe4f02; /* bg-teal-800 */
+    --color-theme-first-text: #0d9488; /* text-teal-600 */
+    --color-theme-second: #5b21b6; /* bg-purple-800 */
+    --color-theme-third: #ee855bcd;
+  }
