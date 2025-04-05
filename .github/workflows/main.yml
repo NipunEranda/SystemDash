@@ -72,11 +72,13 @@ jobs:
       - name: Build project for apple aarch64
         run: ./build applearm
 
+      - name: Prepare for release
+        run: mkdir -p release
+
       - name: Zip artifact for deployment and prepare artifact
         run: |
           cd dist && zip -r systemdash-apple-aarch64.zip .
-          mkdir -p release
-          cp dist/systemdash-apple-aarch64.zip release/systemdash-apple-aarch64.zip
+          cp systemdash-apple-aarch64.zip ../release/systemdash-apple-aarch64.zip
         shell: bash
 
       - name: Clean build
@@ -88,7 +90,7 @@ jobs:
       - name: Zip artifact for deployment and prepare artifact
         run: |
           cd dist && zip -r systemdash-apple-x86.zip .
-          cp dist/systemdash-apple-x86.zip release/systemdash-apple-x86.zip
+          cp systemdash-apple-x86.zip ../release/systemdash-apple-x86.zip
         shell: bash
 
       - name: Upload artifacts
