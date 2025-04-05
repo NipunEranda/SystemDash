@@ -208,19 +208,19 @@ void build_frontend()
 
 char *get_target(const char *systemType)
 {
-    if (strcmp(systemType, "applesilicon") == 0)
+    if (strcmp(systemType, apple_silicon)== 0)
     {
         return "aarch64-apple-darwin";
     }
-    else if (strcmp(systemType, "applex86") == 0)
+    else if (strcmp(systemType, apple_x86) == 0)
     {
         return "x86_64-apple-darwin";
     }
-    else if (strcmp(systemType, "linux") == 0)
+    else if (strcmp(systemType, linx) == 0)
     {
         return "x86_64-unknown-linux-gnu";
     }
-    else if (strcmp(systemType, "windows") == 0)
+    else if (strcmp(systemType, windows) == 0)
     {
         return "x86_64-pc-windows-gnu";
     }
@@ -255,7 +255,7 @@ void build(const char *systemType)
     
     status = system(build_command);
 #else
-    if ((strcmp(systemType, "applesilicon") == 0) || (strcmp(systemType, "applex86") == 0) || (strcmp(systemType, "linux") == 0))
+    if ((strcmp(systemType, apple_silicon) == 0) || (strcmp(systemType, apple_x86) == 0) || (strcmp(systemType, linx) == 0))
     {
         char build_command[100];
         sprintf(build_command, "rustup target add %s && cargo build --release --target %s", get_target(systemType), get_target(systemType));

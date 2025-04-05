@@ -12,7 +12,7 @@ async fn handle_websocket(ws: WebSocket) {
     let (mut tx, mut rx) = ws.split();
 
     // Periodically send system info to the client
-    let mut interval = interval(Duration::from_secs(3));
+    let mut interval = interval(Duration::from_secs(1));
     loop {
         tokio::select! {
             _ = interval.tick() => {

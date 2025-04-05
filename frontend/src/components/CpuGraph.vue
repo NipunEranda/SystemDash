@@ -36,11 +36,6 @@ Chart.register(
 );
 
 const props = defineProps({
-  cpuUsage: {
-    type: Number,
-    required: true,
-    validator: (value) => value >= 0 && value <= 100,
-  },
   cpus: {
     type: Array,
     required: true
@@ -50,7 +45,8 @@ const props = defineProps({
 const cpuGaugeCanvas = ref(null);
 const cpuUsageBarCanvas = ref(null)
 let cpuChart = null,
-cpuBarChart = null;
+cpuBarChart = null,
+averageCpuUsage = ref(0);
 
 onMounted(() => {
   const canvas = cpuGaugeCanvas.value;
@@ -72,7 +68,7 @@ onMounted(() => {
       labels: ["Used", "Available"],
       datasets: [
         {
-          data: [props.cpuUsage, 100 - props.cpuUsage],
+          data: [averageCpuUsage.value, 100 - averageCpuUsage.value],
           backgroundColor: ["#00bba7", "#18181b"],
           borderWidth: 3,
           borderColor: "#27272a",
@@ -108,7 +104,7 @@ onMounted(() => {
           const fontSize = chart.options.plugins.customText.fontSize || 18;
           const fontColor =
             chart.options.plugins.customText.fontColor || "#000";
-          const text = `${round(props.cpuUsage)}%`;
+          const text = `${round(props.cpus.reduce((acc, cpu) => acc + cpu.usage, 0) / props.cpus.length)}%`;
           ctx.save();
           ctx.font = `${fontSize}px sans-serif`;
           ctx.fillStyle = fontColor;
@@ -147,20 +143,13 @@ onMounted(() => {
 });
 
 watch(
-  () => props.cpuUsage,
-  (newUsage) => {
-    if (cpuChart) {
-      cpuChart.data.datasets[0].data = [newUsage, 100 - newUsage];
-      cpuChart.update();
-    }
-  }
-);
-
-watch(
   () => props.cpus,
   (newUsage) => {
     cpuBarChart.data.datasets[0].data = newUsage.map(cpu => cpu = cpu.usage);
     console.log(cpuBarChart.data.datasets[0].data);
+    averageCpuUsage.value = newUsage.reduce((acc, cpu) => acc + cpu.usage, 0) / newUsage.length;
+    cpuChart.data.datasets[0].data = [averageCpuUsage.value, 100 - averageCpuUsage.value];
+    cpuChart.update();
     cpuBarChart.update();
   }
 );

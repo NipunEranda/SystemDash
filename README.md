@@ -16,10 +16,6 @@ This document outlines the build process for different target platforms.
 
     *   **Note:**  The `-arch arm64` flag might be needed for cross-compilation on non-ARM64 systems.  Consider adding a conditional check in your build script or providing separate instructions.
 
-    ```bash
-    gcc -arch arm64 builder/build.c builder/functions.c -o ./build 
-    ```
-
 2.  **Build for Target Platform:**
 
     ```bash

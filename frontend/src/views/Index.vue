@@ -2,7 +2,7 @@
   <div class="grid">
     <div class="flex w-screen">
       <div class="w-full">
-        <CPU-GRAPH v-if="sys_info.primary" :cpuUsage="sys_info.primary ? sys_info.primary.cpu_usage : 0" :cpus="sys_info.cpus ? sys_info.cpus : []" />
+        <CPU-GRAPH v-if="sys_info.primary" :cpus="sys_info.cpus ? sys_info.cpus : []" />
       </div>
       <div class="w-full">
         <MEMORY-GRAPH />

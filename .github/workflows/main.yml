@@ -24,108 +24,114 @@ jobs:
       - name: Install cross-compilation tools
         run: sudo apt update && sudo apt install -y build-essential gcc
 
-      - name: Clean cargo build cache
-        run: cargo clean
+      - name: Compile build script
+        run: gcc builder/build.c builder/functions.c -o ./build
+
+      - name: Clean build
+        run: ./build clean
 
       - name: Build project
-        run: cargo build --release --target x86_64-unknown-linux-gnu --verbose
+        run: ./build linux
+
+      - name: Zip artifact for deployment
+        run: cd dist && zip -r systemdash-linux.zip .
 
       - name: Prepare artifact
         run: |
           mkdir -p release
-          cp target/x86_64-unknown-linux-gnu/release/SystemDash release/systemdash-linux
+          cp dist/systemdash-linux.zip release/systemdash-linux.zip
         shell: bash
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: systemdash-linux
-          path: release/systemdash-linux
+          path: release/systemdash-linux.zip
 
-  build-mac:
-    runs-on: macos-latest
+  # build-mac:
+  #   runs-on: macos-latest
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
 
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: x86_64-apple-darwin,aarch64-apple-darwin
+  #     - name: Install Rust
+  #       uses: dtolnay/rust-toolchain@stable
+  #       with:
+  #         targets: x86_64-apple-darwin,aarch64-apple-darwin
 
-      - name: Install Rust target
-        run: rustup target add x86_64-apple-darwin aarch64-apple-darwin
+  #     - name: Install Rust target
+  #       run: rustup target add x86_64-apple-darwin aarch64-apple-darwin
 
-      - name: Clean cargo build cache
-        run: cargo clean
+  #     - name: Clean cargo build cache
+  #       run: cargo clean
 
-      - name: Build project for macOS Intel (x86_64)
-        run: cargo build --release --target x86_64-apple-darwin --verbose
+  #     - name: Build project for macOS Intel (x86_64)
+  #       run: cargo build --release --target x86_64-apple-darwin --verbose
 
-      - name: Build project for macOS Apple Silicon (aarch64)
-        run: cargo build --release --target aarch64-apple-darwin --verbose
+  #     - name: Build project for macOS Apple Silicon (aarch64)
+  #       run: cargo build --release --target aarch64-apple-darwin --verbose
 
-      - name: Prepare artifacts
-        run: |
-          mkdir -p release
-          cp target/x86_64-apple-darwin/release/SystemDash release/systemdash-mac-x86_64
-          cp target/aarch64-apple-darwin/release/SystemDash release/systemdash-mac-aarch64
-        shell: bash
+  #     - name: Prepare artifacts
+  #       run: |
+  #         mkdir -p release
+  #         cp target/x86_64-apple-darwin/release/SystemDash release/systemdash-mac-x86_64
+  #         cp target/aarch64-apple-darwin/release/SystemDash release/systemdash-mac-aarch64
+  #       shell: bash
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-            name: systemdash-mac-x86_64
-            path: release/systemdash-mac-x86_64
+  #     - name: Upload artifacts
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #           name: systemdash-mac-x86_64
+  #           path: release/systemdash-mac-x86_64
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-            name: systemdash-mac-aarch64
-            path: release/systemdash-mac-aarch64
+  #     - name: Upload artifacts
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #           name: systemdash-mac-aarch64
+  #           path: release/systemdash-mac-aarch64
 
-  build-windows:
-    runs-on: ubuntu-latest
+  # build-windows:
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
 
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: x86_64-pc-windows-gnu
+  #     - name: Install Rust
+  #       uses: dtolnay/rust-toolchain@stable
+  #       with:
+  #         targets: x86_64-pc-windows-gnu
 
-      - name: Install Rust target
-        run: rustup target add x86_64-pc-windows-gnu
+  #     - name: Install Rust target
+  #       run: rustup target add x86_64-pc-windows-gnu
 
-      - name: Install cross-compilation tools
-        run: sudo apt update && sudo apt install -y build-essential gcc gcc-mingw-w64-x86-64-win32
+  #     - name: Install cross-compilation tools
+  #       run: sudo apt update && sudo apt install -y build-essential gcc gcc-mingw-w64-x86-64-win32
 
-      - name: Clean cargo build cache
-        run: cargo clean
+  #     - name: Clean cargo build cache
+  #       run: cargo clean
 
-      - name: Build project
-        run: cargo build --release --target x86_64-pc-windows-gnu --verbose
+  #     - name: Build project
+  #       run: cargo build --release --target x86_64-pc-windows-gnu --verbose
 
-      - name: Prepare artifact
-        run: |
-          mkdir -p release
-          cp target/x86_64-pc-windows-gnu/release/SystemDash.exe release/systemdash-windows.exe
-        shell: bash
+  #     - name: Prepare artifact
+  #       run: |
+  #         mkdir -p release
+  #         cp target/x86_64-pc-windows-gnu/release/SystemDash.exe release/systemdash-windows.exe
+  #       shell: bash
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: systemdash-windows
-          path: release/systemdash-windows.exe
+  #     - name: Upload artifact
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: systemdash-windows
+  #         path: release/systemdash-windows.exe
 
   release:
     needs: 
       - build-linux
-      - build-mac
-      - build-windows
+      # - build-mac
+      # - build-windows
     runs-on: ubuntu-latest
     permissions:
       contents: write

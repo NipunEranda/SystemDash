@@ -8,10 +8,10 @@
 
 #include "functions.h"
 
-const char* apple_silicon = "applesilicon";
-const char* apple_x86 = "applex86";
-const char* linx = "linux";
-const char* windows = "windows";
+extern char* apple_silicon;
+extern char* apple_x86;
+extern char* linx;
+extern char* windows;
 
 int main(int argc, char *argv[])
 {

@@ -1,3 +1,5 @@
+use std::{thread, time::Duration};
+
 use sysinfo::{Disks, System};
 
 use crate::models::{
@@ -62,8 +64,22 @@ pub fn load() -> SysInfo {
         ));
     }
 
-    // Store cpus information
-    for cpu in sys.cpus() {
+    sys.refresh_cpu_all();
+    thread::sleep(Duration::from_secs(1));
+    sys.refresh_cpu_all();
+
+    // // Store cpus information
+    // for cpu in sys.cpus() {
+    //     cpus.push(Cpu::new(
+    //         cpu.name().to_string(),
+    //         cpu.cpu_usage(),
+    //         cpu.frequency(),
+    //         cpu.vendor_id().to_string(),
+    //         cpu.brand().to_string(),
+    //     ));
+    // }
+
+    for (_i, cpu) in sys.cpus().iter().enumerate() {
         cpus.push(Cpu::new(
             cpu.name().to_string(),
             cpu.cpu_usage(),
