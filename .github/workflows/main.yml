@@ -30,7 +30,7 @@ jobs:
       - name: Clean build
         run: ./build clean
 
-      - name: Build project
+      - name: Build project for Linux
         run: ./build linux
 
       - name: Zip artifact for deployment
@@ -129,7 +129,7 @@ jobs:
       - name: Clean build
         run: ./build clean
 
-      - name: Build project for apple x86
+      - name: Build project for windows
         run: ./build windows
 
       - name: Zip artifact for deployment

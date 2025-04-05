@@ -13,10 +13,10 @@ const char *rust_build = "target";
 const char *node_modules = "./frontend/node_modules";
 const char *node_build = "./frontend/dist";
 
-const char* apple_arm = "applearm";
-const char* apple_x86 = "applex86";
-const char* linx = "linux";
-const char* windows = "windows";
+const char *apple_arm = "applearm";
+const char *apple_x86 = "applex86";
+const char *linx = "linux";
+const char *windows = "windows";
 
 int remove_directory(const char *path)
 {
@@ -192,7 +192,7 @@ void clean(bool keep_build)
 {
     printf("Cleaning up...\n");
 
-    if(keep_build == false)
+    if (keep_build == false)
         remove_directory(prev_build);
     remove_directory(rust_build);
     remove_directory(node_modules);
@@ -208,7 +208,7 @@ void build_frontend()
 
 char *get_target(const char *systemType)
 {
-    if (strcmp(systemType, apple_arm)== 0)
+    if (strcmp(systemType, apple_arm) == 0)
     {
         return "aarch64-apple-darwin";
     }
@@ -248,13 +248,6 @@ void build(const char *systemType)
 {
     int status;
     char *target = "";
-
-#ifdef _WIN32
-    char build_command[100];
-    sprintf(build_command, "rustup target add %s && cargo build --release --target %s", get_target(systemType), get_target(systemType));
-    
-    status = system(build_command);
-#else
     if ((strcmp(systemType, apple_arm) == 0) || (strcmp(systemType, apple_x86) == 0) || (strcmp(systemType, linx) == 0))
     {
         char build_command[100];
@@ -262,8 +255,13 @@ void build(const char *systemType)
 
         status = system(build_command);
     }
+    else
+    {
+        char build_command[100];
+        sprintf(build_command, "rustup target add %s && cargo build --release --target %s", get_target(systemType), get_target(systemType));
 
-#endif
+        status = system(build_command);
+    }
 
     if (status == -1)
     {
