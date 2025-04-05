@@ -24,14 +24,14 @@ This document outlines the build process for different target platforms.
 
     Where `<target>` can be one of the following:
 
-    *   `applesilicon`:  For Apple Silicon (ARM64)
+    *   `applearm`:  For Apple aarch64 (ARM64)
     *   `applex86`: For Apple Intel (x86)
     *   `linux`: For Linux
 
-    **Example:** To build for Apple Silicon:
+    **Example:** To build for Apple aarch64:
 
     ```bash
-    ./build applesilicon
+    ./build applearm
     ```
 
 3.  **Clean Previous Build:**

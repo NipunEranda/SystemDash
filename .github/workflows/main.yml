@@ -18,11 +18,11 @@ jobs:
         with:
           targets: x86_64-unknown-linux-gnu
 
-      - name: Install Rust target
-        run: rustup target add x86_64-unknown-linux-gnu
-
       - name: Install cross-compilation tools
         run: sudo apt update && sudo apt install -y build-essential gcc
+
+      - name: Install Rust target
+        run: rustup target add x86_64-unknown-linux-gnu
 
       - name: Compile build script
         run: gcc builder/build.c builder/functions.c -o ./build
@@ -48,90 +48,108 @@ jobs:
           name: systemdash-linux
           path: release/systemdash-linux.zip
 
-  # build-mac:
-  #   runs-on: macos-latest
+  build-mac:
+    runs-on: macos-latest
 
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-  #     - name: Install Rust
-  #       uses: dtolnay/rust-toolchain@stable
-  #       with:
-  #         targets: x86_64-apple-darwin,aarch64-apple-darwin
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-apple-darwin,aarch64-apple-darwin
 
-  #     - name: Install Rust target
-  #       run: rustup target add x86_64-apple-darwin aarch64-apple-darwin
+      - name: Install Rust target
+        run: rustup target add x86_64-apple-darwin aarch64-apple-darwin
 
-  #     - name: Clean cargo build cache
-  #       run: cargo clean
+      - name: Compile build script
+        run: gcc builder/build.c builder/functions.c -o ./build
 
-  #     - name: Build project for macOS Intel (x86_64)
-  #       run: cargo build --release --target x86_64-apple-darwin --verbose
+      - name: Clean build
+        run: ./build clean
 
-  #     - name: Build project for macOS Apple Silicon (aarch64)
-  #       run: cargo build --release --target aarch64-apple-darwin --verbose
+      - name: Build project for apple aarch64
+        run: ./build applearm
 
-  #     - name: Prepare artifacts
-  #       run: |
-  #         mkdir -p release
-  #         cp target/x86_64-apple-darwin/release/SystemDash release/systemdash-mac-x86_64
-  #         cp target/aarch64-apple-darwin/release/SystemDash release/systemdash-mac-aarch64
-  #       shell: bash
+      - name: Zip artifact for deployment
+        run: cd dist && zip -r systemdash-apple-aarch64.zip .
 
-  #     - name: Upload artifacts
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #           name: systemdash-mac-x86_64
-  #           path: release/systemdash-mac-x86_64
+      - name: Clean build
+        run: ./build clean
 
-  #     - name: Upload artifacts
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #           name: systemdash-mac-aarch64
-  #           path: release/systemdash-mac-aarch64
+      - name: Build project for apple x86
+        run: ./build applex86
 
-  # build-windows:
-  #   runs-on: ubuntu-latest
+      - name: Zip artifact for deployment
+        run: cd dist && zip -r systemdash-apple-x86.zip .
 
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
+      - name: Prepare artifacts
+        run: |
+          mkdir -p release
+          cp dist/systemdash-apple-aarch64.zip release/systemdash-apple-aarch64.zip
+          cp dist/systemdash-apple-x86.zip release/systemdash-apple-x86.zip
+        shell: bash
 
-  #     - name: Install Rust
-  #       uses: dtolnay/rust-toolchain@stable
-  #       with:
-  #         targets: x86_64-pc-windows-gnu
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+            name: systemdash-apple-aarch64
+            path: release/systemdash-apple-aarch64.zip
 
-  #     - name: Install Rust target
-  #       run: rustup target add x86_64-pc-windows-gnu
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+            name: systemdash-apple-x86
+            path: release/systemdash-apple-x86.zip
 
-  #     - name: Install cross-compilation tools
-  #       run: sudo apt update && sudo apt install -y build-essential gcc gcc-mingw-w64-x86-64-win32
+  build-windows:
+    runs-on: ubuntu-latest
 
-  #     - name: Clean cargo build cache
-  #       run: cargo clean
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-  #     - name: Build project
-  #       run: cargo build --release --target x86_64-pc-windows-gnu --verbose
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-gnu
 
-  #     - name: Prepare artifact
-  #       run: |
-  #         mkdir -p release
-  #         cp target/x86_64-pc-windows-gnu/release/SystemDash.exe release/systemdash-windows.exe
-  #       shell: bash
+      - name: Install cross-compilation tools
+        run: sudo apt update && sudo apt install -y build-essential gcc gcc-mingw-w64-x86-64-win32
 
-  #     - name: Upload artifact
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: systemdash-windows
-  #         path: release/systemdash-windows.exe
+      - name: Install Rust target
+        run: rustup target add x86_64-pc-windows-gnu
+
+      - name: Compile build script
+        run: gcc builder/build.c builder/functions.c -o ./build
+
+      - name: Clean build
+        run: ./build clean
+
+      - name: Build project for apple x86
+        run: ./build windows
+
+      - name: Zip artifact for deployment
+        run: cd dist && zip -r systemdash-windows.zip .
+
+      - name: Prepare artifact
+        run: |
+          mkdir -p release
+          cp dist/systemdash-windows.zip release/systemdash-windows.exe
+        shell: bash
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: systemdash-windows
+          path: release/systemdash-windows.exe
 
   release:
     needs: 
       - build-linux
-      # - build-mac
-      # - build-windows
+      - build-mac
+      - build-windows
     runs-on: ubuntu-latest
     permissions:
       contents: write

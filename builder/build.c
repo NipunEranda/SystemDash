@@ -8,7 +8,7 @@
 
 #include "functions.h"
 
-extern char* apple_silicon;
+extern char* apple_arm;
 extern char* apple_x86;
 extern char* linx;
 extern char* windows;
@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 {
     if (argv[1])
     {
-        if (strcmp(argv[1], apple_silicon) == 0 || strcmp(argv[1], apple_x86) == 0 || strcmp(argv[1], linx) == 0 || strcmp(argv[1], windows) == 0)
+        if (strcmp(argv[1], apple_arm) == 0 || strcmp(argv[1], apple_x86) == 0 || strcmp(argv[1], linx) == 0 || strcmp(argv[1], windows) == 0)
         {
             build(argv[1]);
         }
@@ -27,12 +27,12 @@ int main(int argc, char *argv[])
         }
         else
         {
-            printf("No matching parameter provided. Please specify 'applesilicon', 'applex86', 'linux', windows, or 'clean'.");
+            printf("No matching parameter provided. Please specify 'applearm', 'applex86', 'linux', windows, or 'clean'.");
         }
     }
     else
     {
-        printf("No parameter provided. Please specify 'applesilicon', 'applex86', 'linux', windows, or 'clean'.");
+        printf("No parameter provided. Please specify 'applearm', 'applex86', 'linux', windows, or 'clean'.");
     }
 
     return 0;
