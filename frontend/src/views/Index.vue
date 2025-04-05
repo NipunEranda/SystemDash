@@ -2,7 +2,7 @@
   <div class="grid">
     <div class="flex w-screen">
       <div class="w-full">
-        <CPU-GRAPH />
+        <CPU-GRAPH v-if="sys_info.primary" :cpuUsage="sys_info.primary ? sys_info.primary.cpu_usage : 0" :cpus="sys_info.cpus ? sys_info.cpus : []" />
       </div>
       <div class="w-full">
         <MEMORY-GRAPH />
@@ -29,7 +29,7 @@ onMounted(() => {
   socket.onmessage = (event) => {
     try {
       sys_info.value = JSON.parse(event.data);
-      console.log(sys_info.value);
+      // console.log(sys_info.value);
     } catch (e) {
       sys_info.value = {};
     }
