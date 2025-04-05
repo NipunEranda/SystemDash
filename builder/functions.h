@@ -12,7 +12,7 @@ int move_file(const char *source, const char *destination);
 void clean(bool keep_build);
 void build_frontend();
 char *get_target(const char *systemType);
-char *get_executable_name(char *name);
+char *get_executable_name(const char *systemType, char *name);
 
 void build(const char *systemType);
 

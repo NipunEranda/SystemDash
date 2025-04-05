@@ -230,16 +230,23 @@ char *get_target(const char *systemType)
     }
 }
 
-char *get_executable_name(char *name)
+char *get_executable_name(const char *systemType, char *name)
 {
-    char *executable_name = "";
-#ifdef _WIN32
-    // Windows-specific code
-    executable_name = "SystemDash.exe"; // On Windows, `system` should work fine for basic commands
-    sprintf(executable_name, "%s.exe", name);
-#else
-    executable_name = name;
-#endif
+    char *executable_name = malloc(100 * sizeof(char));
+    if (executable_name == NULL)
+    {
+        perror("Error allocating memory");
+        return NULL;
+    }
+
+    if ((strcmp(systemType, apple_arm) == 0) || (strcmp(systemType, apple_x86) == 0) || (strcmp(systemType, linx) == 0))
+    {
+        sprintf(executable_name, "%s", name);
+    }
+    else
+    {
+        sprintf(executable_name, "%s.exe", name);
+    }
 
     return executable_name;
 }
@@ -261,6 +268,7 @@ void build(const char *systemType)
         sprintf(build_command, "rustup target add %s && cargo build --release --target %s", get_target(systemType), get_target(systemType));
 
         status = system(build_command);
+        status = 0;
     }
 
     if (status == -1)
@@ -271,12 +279,20 @@ void build(const char *systemType)
     {
         char move_command_source[100];
         char move_command_destination[100];
-        sprintf(move_command_source, "target/%s/release/%s", get_target(systemType), get_executable_name("SystemDash"));
-        sprintf(move_command_destination, "./dist/%s", get_executable_name("systemdash"));
+        char *executable_name = get_executable_name(systemType, "SystemDash");
+        if (executable_name == NULL)
+        {
+            fprintf(stderr, "Failed to get executable name.\n");
+            return;
+        }
+
+        sprintf(move_command_source, "target/%s/release/%s", get_target(systemType), executable_name);
+        sprintf(move_command_destination, "./dist/%s", executable_name);
 
         build_frontend();
         move_file(move_command_source, move_command_destination);
         clean(true);
+        free(executable_name); // Free the allocated memory
         printf("\nBuild completed successfully.\n");
     }
 }

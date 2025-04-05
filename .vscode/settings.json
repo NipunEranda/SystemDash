@@ -4,6 +4,7 @@
         "*.js": "javascript",
         "stat.h": "c",
         "functions.h": "c",
-        "dirent.h": "c"
+        "dirent.h": "c",
+        "typeinfo": "c"
     }
 }
