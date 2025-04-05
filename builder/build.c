@@ -8,11 +8,16 @@
 
 #include "functions.h"
 
+const char* apple_silicon = "applesilicon";
+const char* apple_x86 = "applex86";
+const char* linx = "linux";
+const char* windows = "windows";
+
 int main(int argc, char *argv[])
 {
     if (argv[1])
     {
-        if (strcmp(argv[1], "applesilicon") == 0 || strcmp(argv[1], "applex86") == 0 || strcmp(argv[1], "linux") == 0)
+        if (strcmp(argv[1], apple_silicon) == 0 || strcmp(argv[1], apple_x86) == 0 || strcmp(argv[1], linx) == 0 || strcmp(argv[1], windows) == 0)
         {
             build(argv[1]);
         }
@@ -22,12 +27,12 @@ int main(int argc, char *argv[])
         }
         else
         {
-            printf("No matching parameter provided. Please specify 'applesilicon', 'applex86', 'linux', or 'clean'.");
+            printf("No matching parameter provided. Please specify 'applesilicon', 'applex86', 'linux', windows, or 'clean'.");
         }
     }
     else
     {
-        printf("No parameter provided. Please specify 'applesilicon', 'applex86', 'linux', or 'clean'.");
+        printf("No parameter provided. Please specify 'applesilicon', 'applex86', 'linux', windows, or 'clean'.");
     }
 
     return 0;
