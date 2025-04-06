@@ -7,19 +7,17 @@ pub struct Primary {
     pub os_version: String,
     pub host_name: String,
     pub process_count: usize,
-    pub cpu_usage: f32,
     pub cpu_count: usize,
 }
 
 impl Primary {
-    pub fn new(system_name: String, kernel_version: String, os_version: String, host_name: String, process_count: usize, cpu_usage: f32, cpu_count: usize) -> Self {
+    pub fn new(system_name: String, kernel_version: String, os_version: String, host_name: String, process_count: usize, cpu_count: usize) -> Self {
         Primary {
             system_name,
             kernel_version,
             os_version,
             host_name,
             process_count,
-            cpu_usage,
             cpu_count
         }
     }

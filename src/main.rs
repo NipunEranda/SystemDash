@@ -10,22 +10,28 @@ mod routes;
 // WebSocket handler
 async fn handle_websocket(ws: WebSocket) {
     let (mut tx, mut rx) = ws.split();
-
-    // Periodically send system info to the client
     let mut interval = interval(Duration::from_secs(1));
+
     loop {
         tokio::select! {
             _ = interval.tick() => {
-                let data = serde_json::to_string(&routes::info::load()).unwrap();
-                if tx.send(Message::text(data)).await.is_err() {
-                    println!("WebSocket client disconnected");
-                    break;
+                match serde_json::to_string(&routes::info::load()) {
+                    Ok(data) => {
+                        if tx.send(Message::text(data)).await.is_err() {
+                            eprintln!("WebSocket client disconnected");
+                            break;
+                        }
+                    }
+                    Err(e) => eprintln!("Failed to serialize system info: {}", e),
                 }
             }
             Some(Ok(msg)) = rx.next() => {
                 println!("Received message from client: {:?}", msg);
             }
-            else => break,
+            else => {
+                eprintln!("WebSocket connection closed");
+                break;
+            }
         }
     }
 }
@@ -38,21 +44,32 @@ async fn main() {
         .map(|ws: warp::ws::Ws| ws.on_upgrade(handle_websocket));
 
     // REST API route
-    let system_info = warp::path("api")
-        .and(warp::path("info"))
+    let system_info_route = warp::path!("api" / "info")
         .and(warp::get())
         .map(|| {
-            warp::reply::with_status(
-                warp::reply::json(&routes::info::load()),
-                warp::http::StatusCode::OK,
-            )
+            match serde_json::to_string(&routes::info::load()) {
+                Ok(json) => warp::reply::with_status(
+                    warp::reply::json(&json),
+                    warp::http::StatusCode::OK,
+                ),
+                Err(e) => {
+                    eprintln!("Failed to serialize system info: {}", e);
+                    warp::reply::with_status(
+                        warp::reply::json(&"Internal Server Error"),
+                        warp::http::StatusCode::INTERNAL_SERVER_ERROR,
+                    )
+                }
+            }
         });
 
-    let static_files = warp::fs::dir("./static");
+    // Static file serving route
+    let static_files_route = warp::fs::dir("./static");
 
-    let routes = websocket_route.or(system_info).or(static_files);
+    // Combine all routes
+    let routes = websocket_route.or(system_info_route).or(static_files_route);
 
     // Start the Warp server
-    println!("Starting server on http://localhost:8000");
-    warp::serve(routes).run(([0, 0, 0, 0], 8000)).await;
+    let address = ([0, 0, 0, 0], 8000);
+    println!("Starting server on http://{}:{}", "localhost", address.1);
+    warp::serve(routes).run(address).await;
 }

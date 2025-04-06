@@ -1,5 +1,5 @@
 <template>
-  <div class="cpu-gauge-container w-full px-16 pt-5">
+  <div class="cpu-gauge-container w-2xl px-16 pt-5">
     <canvas ref="cpuGaugeCanvas" class="cpu-gauge-canvas w-full"></canvas>
     <canvas ref="cpuUsageBarCanvas"></canvas>
   </div>
@@ -19,13 +19,11 @@ import {
   LinearScale,
   Title,
 } from "chart.js";
-import annotationPlugin from "chartjs-plugin-annotation";
 import { round } from "../utils";
 
 Chart.register(
   DoughnutController,
   ArcElement,
-  Tooltip,
   BarController,
   BarElement,
   CategoryScale,
@@ -40,15 +38,19 @@ const props = defineProps({
     type: Array,
     required: true
   }
-});
+}),cpuGaugeCanvas = ref(null),
+cpuUsageBarCanvas = ref(null);
 
-const cpuGaugeCanvas = ref(null);
-const cpuUsageBarCanvas = ref(null)
 let cpuChart = null,
 cpuBarChart = null,
 averageCpuUsage = ref(0);
 
 onMounted(() => {
+  initCpuGauge();
+  initCpuBars();
+});
+
+function initCpuGauge() {
   const canvas = cpuGaugeCanvas.value;
   const ctx = canvas.getContext("2d");
 
@@ -61,6 +63,8 @@ onMounted(() => {
   canvas.width = width * devicePixelRatio;
   canvas.height = height * devicePixelRatio;
   ctx.scale(devicePixelRatio, devicePixelRatio);
+
+  averageCpuUsage.value = round(props.cpus.reduce((acc, cpu) => acc + cpu.usage, 0) / props.cpus.length);
 
   cpuChart = new Chart(ctx, {
     type: "doughnut",
@@ -116,11 +120,13 @@ onMounted(() => {
       },
     ],
   });
+}
 
+function initCpuBars() {
   cpuBarChart = new Chart(cpuUsageBarCanvas.value, {
     type: 'bar',
     data: {
-      labels: props.cpus.map(cpu => cpu = `CPU${cpu.index}`),
+      labels: props.cpus.map(cpu => cpu = `CPU ${cpu.index}`),
       datasets: [{
         label: 'CPU Usage',
         data: props.cpus.map(cpu => cpu = cpu.usage),
@@ -140,17 +146,26 @@ onMounted(() => {
       },
     },
   });
-});
+}
+
+function updateCpuGauge(newUsage) {
+  averageCpuUsage.value = newUsage.reduce((acc, cpu) => acc + cpu.usage, 0) / newUsage.length;
+  cpuChart.data.datasets[0].data = [averageCpuUsage.value, 100 - averageCpuUsage.value];
+
+  cpuChart.update();
+}
+
+function updateCpuBars(newUsage) {
+  cpuBarChart.data.datasets[0].data = newUsage.map(cpu => cpu = cpu.usage);
+
+  cpuBarChart.update();
+}
 
 watch(
   () => props.cpus,
   (newUsage) => {
-    cpuBarChart.data.datasets[0].data = newUsage.map(cpu => cpu = cpu.usage);
-    console.log(cpuBarChart.data.datasets[0].data);
-    averageCpuUsage.value = newUsage.reduce((acc, cpu) => acc + cpu.usage, 0) / newUsage.length;
-    cpuChart.data.datasets[0].data = [averageCpuUsage.value, 100 - averageCpuUsage.value];
-    cpuChart.update();
-    cpuBarChart.update();
+    updateCpuGauge(newUsage);
+    updateCpuBars(newUsage);
   }
 );
 </script>
