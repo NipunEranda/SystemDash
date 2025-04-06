@@ -1,7 +1,7 @@
 <template>
   <div class="grid">
     <div class="flex w-screen">
-      <div class="w-full">
+      <div class="w-full place-items-center place-self-center">
         <System v-if="sys_info.primary" :primary="sys_info.primary ? sys_info.primary : {}"/>
       </div>
       <div class="w-full place-items-center">
