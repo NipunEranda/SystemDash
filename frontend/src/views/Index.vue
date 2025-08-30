@@ -1,51 +1,34 @@
 <template>
-  <div class="grid">
-    <div class="flex w-screen">
-      <div class="w-full place-items-center place-self-center">
-        <System v-if="sys_info.primary" :primary="sys_info.primary ? sys_info.primary : {}"/>
+  <div class="grid" v-if="averageCpuUsage">
+      <div style="display: flex; gap: 24px; width: 100%;">
+        <gaugeChart :percentage="`${averageCpuUsage}%`" label="CPU" style="flex: 1;" />
+        <gaugeChart :percentage="`${averageMemoryUsage}%`" label="Memory" :value="memoryText" style="flex: 1;" valueSize="1.4rem" />
       </div>
-      <div class="w-full place-items-center">
-        <CPU-GRAPH v-if="sys_info.cpus" :cpus="sys_info.cpus ? sys_info.cpus : []" />
-      </div>
-    </div>
-    <div class="flex w-screen">
-      <div class="w-full">
-        Memory
-      </div>
-      <div class="w-full">
-        <DISK-GRAPH />
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, ref } from "vue";
+import { inject, computed } from "vue";
+const sys_info = inject('sys_info');
 
-let sys_info = ref({});
+const averageCpuUsage = computed(() => {
+  if (sys_info.value && sys_info.value.cpus) {
+    return Math.round(sys_info.value.cpus.reduce((acc, cpu) => acc + cpu.usage, 0) / sys_info.value.cpus.length);
+  }
+  return 0;
+});
 
-onMounted(() => {
-  const socket = new WebSocket("ws://localhost:8000/ws");
+const averageMemoryUsage = computed(() => {
+  if (sys_info.value && sys_info.value.memory) {
+    return Math.round(sys_info.value.memory.used_memory / sys_info.value.memory.total_memory * 100);
+  }
+  return 0;
+});
 
-  socket.onopen = () => {
-    console.log("WebSocket connection established");
-  };
-
-  socket.onmessage = (event) => {
-    try {
-      sys_info.value = JSON.parse(event.data);
-      console.log(sys_info.value);
-    } catch (e) {
-      sys_info.value = {};
-    }
-  };
-
-  socket.onclose = () => {
-    console.log("WebSocket connection closed");
-  };
-
-  socket.onerror = (error) => {
-    console.error("WebSocket error:", error);
-  };
+const memoryText = computed(() => {
+  if (sys_info.value && sys_info.value.memory) {
+    return `${(sys_info.value.memory.used_memory / (1024 ** 3)).toFixed(2)} / ${(sys_info.value.memory.total_memory / (1024 ** 3)).toFixed(2)} GB`;
+  }
+  return '0';
 });
 </script>
