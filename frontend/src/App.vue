@@ -2,7 +2,7 @@
   <div>
     <div
       class="fixed flex inset-0 items-center justify-center bg-white dark:bg-dark-theme-primary h-screen w-screen z-50 transition-opacity duration-500"
-      :class="{ 'opacity-100': !sys_info, 'opacity-0': sys_info }"
+      :class="{ 'opacity-100': !sys_info, 'opacity-0 z-0': sys_info }"
       style="pointer-events: all"
     >
       <img

@@ -1,8 +1,9 @@
 <template>
   <div class="grid" v-if="averageCpuUsage">
-      <div style="display: flex; gap: 24px; width: 100%;">
-        <gaugeChart :percentage="`${averageCpuUsage}%`" label="CPU" style="flex: 1;" />
-        <gaugeChart :percentage="`${averageMemoryUsage}%`" label="Memory" :value="memoryText" style="flex: 1;" valueSize="1.4rem" />
+      <div class="flex gap-6 w-full">
+        <!-- <sysInfo :info="sys_info" /> -->
+        <gaugeChart :percentage="`${averageCpuUsage}%`" label="CPU" class="flex-1" />
+        <gaugeChart :percentage="`${averageMemoryUsage}%`" label="Memory" :value="memoryText" class="flex-1" valueSize="1.4rem" />
       </div>
   </div>
 </template>

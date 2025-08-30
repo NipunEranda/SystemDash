@@ -10,7 +10,7 @@ mod routes;
 // WebSocket handler
 async fn handle_websocket(ws: WebSocket) {
     let (mut tx, mut rx) = ws.split();
-    let mut interval = interval(Duration::from_secs(1));
+    let mut interval = interval(Duration::from_secs(3));
 
     loop {
         tokio::select! {

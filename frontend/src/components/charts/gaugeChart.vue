@@ -1,11 +1,12 @@
 <template>
   <div
     class="flex items-center justify-center relative w-full h-full max-w-4xl mx-auto"
+    style="min-height:220px;"
   >
     <svg
       width="100%"
       height="100%"
-      viewBox="0 0 300 300"
+      viewBox="0 15 300 200"
       xmlns="http://www.w3.org/2000/svg"
       class="w-full h-full"
     >
@@ -29,7 +30,7 @@
       <!-- #2b2f36 -->
       <circle
         cx="150"
-        cy="150"
+        cy="160"
         r="120"
         fill="none"
         :stroke="props.color"
@@ -37,13 +38,13 @@
         stroke-dasharray="754 754"
         stroke-dashoffset="300"
         stroke-linecap="butt"
-        transform="rotate(161.5 150 150)"
+        transform="rotate(161.5 150 160)"
       />
 
       <!-- Colored half-circle (foreground, fills the whole half) -->
       <circle
         cx="150"
-        cy="150"
+        cy="160"
         r="120"
         fill="none"
         stroke="url(#g)"
@@ -51,14 +52,14 @@
         stroke-linecap="butt"
         :stroke-dasharray="754"
         :stroke-dashoffset="300 + dashoffset"
-        transform="rotate(162 150 150)"
+        transform="rotate(162 150 160)"
         class="gauge-foreground"
       />
 
       <!-- Center label -->
       <text
         x="150"
-        y="130"
+        y="140"
         font-family="Arial, sans-serif"
         text-anchor="middle"
         :fill="labelColor"
@@ -69,10 +70,9 @@
         {{ label }}
       </text>
 
-      <!-- Center label -->
       <text
         x="150"
-        :y="value ? '180' : '195'"
+        :y="value ? 185 : 200"
         font-family="Arial, sans-serif"
         text-anchor="middle"
         :fill="percentColor"
